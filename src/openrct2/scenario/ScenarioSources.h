@@ -25,6 +25,20 @@ namespace ScenarioSources
     bool TryGetByName(const utf8 * name, source_desc * outDesc);
     bool TryGetById(uint8_t id, source_desc * outDesc);
     void NormaliseName(utf8 * buffer, size_t bufferSize, const utf8 * name);
+
+    struct ScenarioAlias
+    {
+        const utf8 * Original;
+        const utf8 * Alternative;
+    };
+
+    struct ScenarioTitleDescriptor
+    {
+        const uint8_t  Id;
+        const utf8 *   Title;
+        const uint8_t  Category;
+        const uint16_t AdvancementIndex;
+    };
 }
 
 bool scenario_get_source_desc(const utf8 *name, source_desc *outDesc);

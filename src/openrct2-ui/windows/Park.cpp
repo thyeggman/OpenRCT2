@@ -1448,11 +1448,12 @@ rct_window * window_park_objective_open()
     window->y = context_get_height() / 2 - 87;
     window_invalidate(window);
 
-    // Don't display button if there's no next scenario
     if (gConfigGeneral.allow_early_completion) {
         _scenarioRepository = GetScenarioRepository();
         _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
         const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+
+        // If no next scenario and didn't fail current scenario
         if (scenario == nullptr) {
             window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
         }
@@ -1493,21 +1494,20 @@ static void window_park_objective_mouseup(rct_window *w, rct_widgetindex widgetI
         break;
     case WIDX_NEXT_LEVEL:
         if (gConfigGeneral.allow_early_completion) {
-            // TODO Do something if objective failed
             _scenarioRepository = GetScenarioRepository();
             _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
             const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+
             if (scenario != nullptr) {
-                gScenarioIndex += 1;
                 context_load_park_from_file(scenario->path);
             }
             else {
                 window_close_by_class(WC_MANAGE_TRACK_DESIGN);
                 window_close_by_class(WC_TRACK_DELETE_PROMPT);
                 game_do_command(0, 1, 0, 0, GAME_COMMAND_LOAD_OR_QUIT, 1, 0);
-                break;
             }
         }
+        break;
     }
 }
 
@@ -1561,20 +1561,16 @@ static void window_park_objective_invalidate(rct_window *w)
     if (gConfigGeneral.allow_early_completion) {
         // If scenario completed, prompt to advance to next level or quit to menu
         if (gScenarioCompletedCompanyValue != MONEY32_UNDEFINED) {
-            if ((uint32_t)gScenarioCompletedCompanyValue == 0x80000001) {
-                //TODO retry level or quit to menu
-            }
-            else {
-                window_park_objective_widgets[WIDX_NEXT_LEVEL].text = STR_NEXT_SCENARIO;
-                window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_BUTTON;
-                widget_set_enabled(w, WIDX_NEXT_LEVEL, true);
+            _scenarioRepository = GetScenarioRepository();
+            _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
 
-                _scenarioRepository = GetScenarioRepository();
-                _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
-                const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
-                if (scenario == nullptr) {
-                    window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
-                }
+            window_park_objective_widgets[WIDX_NEXT_LEVEL].text = STR_NEXT_SCENARIO;
+            window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_BUTTON;
+            widget_set_enabled(w, WIDX_NEXT_LEVEL, true);
+
+            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+            if (scenario == nullptr) {
+                window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
             }
         }
         else {

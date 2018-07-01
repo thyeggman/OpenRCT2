@@ -3927,6 +3927,7 @@ enum {
     STR_DEBUG_PAINT_SHOW_WIDE_PATHS = 6261,
 
     STR_NEXT_SCENARIO = 6265,
+    STR_RESTART_SCENARIO = 6266,
 
     // Have to include resource strings (from scenarios and objects) for the time being now that language is partially working
     STR_COUNT = 32768

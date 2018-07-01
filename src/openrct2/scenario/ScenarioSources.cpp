@@ -25,7 +25,7 @@ namespace ScenarioSources
     struct ScenarioTitleDescriptor
     {
         const uint8_t  Id;
-        const utf8 * Title;
+        const utf8 *   Title;
         const uint8_t  Category;
     };
 

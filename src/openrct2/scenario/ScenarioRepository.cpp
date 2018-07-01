@@ -384,20 +384,20 @@ public:
         return nullptr;
     }
 
-	const scenario_index_entry * GetByInternalName(const utf8 * name) const override {
-		for (size_t i = 0; i < _scenarios.size(); i++) {
-			const scenario_index_entry * scenario = &_scenarios[i];
+    const scenario_index_entry * GetByInternalName(const utf8 * name) const override {
+        for (size_t i = 0; i < _scenarios.size(); i++) {
+            const scenario_index_entry * scenario = &_scenarios[i];
 
-			if (scenario->source_game == SCENARIO_SOURCE_OTHER && scenario->sc_id == SC_UNIDENTIFIED)
-				continue;
+            if (scenario->source_game == SCENARIO_SOURCE_OTHER && scenario->sc_id == SC_UNIDENTIFIED)
+                continue;
 
-			// Note: this is always case insensitive search for cross platform consistency
-			if (String::Equals(name, scenario->internal_name, true)) {
-				return &_scenarios[i];
-			}
-		}
-		return nullptr;
-	}
+            // Note: this is always case insensitive search for cross platform consistency
+            if (String::Equals(name, scenario->internal_name, true)) {
+                return &_scenarios[i];
+            }
+        }
+        return nullptr;
+    }
 
     const scenario_index_entry * GetByPath(const utf8 * path) const override
     {

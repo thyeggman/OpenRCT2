@@ -112,7 +112,9 @@ void scenario_begin()
     gHistoricalProfit = gInitialCash - gBankLoan;
     gCash = gInitialCash;
 
-    //gS6Info.name;
+    IScenarioRepository * _scenarioRepository = GetScenarioRepository();
+    gScenarioIndex = _scenarioRepository->GetByInternalName(gS6Info.name)->sc_id;
+
     safe_strcpy(gScenarioDetails, gS6Info.details, 256);
     safe_strcpy(gScenarioName, gS6Info.name, 64);
 
