@@ -28,6 +28,9 @@
 #include <openrct2-ui/interface/Dropdown.h>
 #include <openrct2/world/Park.h>
 #include <openrct2/scenario/Scenario.h>
+#include <openrct2/scenario/ScenarioSources.h>
+#include <openrct2/scenario/ScenarioRepository.h>
+#include <openrct2\localisation\LocalisationService.h>
 #include "../interface/Theme.h"
 
 // clang-format off
@@ -68,7 +71,8 @@ enum WINDOW_PARK_WIDGET_IDX {
     WIDX_INCREASE_PRICE,
     WIDX_DECREASE_PRICE,
 
-    WIDX_ENTER_NAME = 11
+    WIDX_NEXT_LEVEL = 11,
+    WIDX_ENTER_NAME
 };
 
 #pragma region Widgets
@@ -78,13 +82,13 @@ enum WINDOW_PARK_WIDGET_IDX {
     { WWT_CAPTION,          0,  1,      228,    1,      14,     STR_STRINGID,                   STR_WINDOW_TITLE_TIP },         /* title bar          */    \
     { WWT_CLOSEBOX,         0,  217,    227,    2,      13,     STR_CLOSE_X,                    STR_CLOSE_WINDOW_TIP },         /* close x button     */    \
     { WWT_RESIZE,           1,  0,      229,    43,     173,    0xFFFFFFFF,                     STR_NONE },                     /* tab content panel  */    \
-    { WWT_TAB,              1,  3,      33,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_ENTRANCE_TAB_TIP },    /* tab 1              */    \
-    { WWT_TAB,              1,  34,     64,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_RATING_TAB_TIP },      /* tab 2              */    \
-    { WWT_TAB,              1,  65,     95,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_GUESTS_TAB_TIP },      /* tab 3              */    \
-    { WWT_TAB,              1,  96,     126,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_PRICE_TAB_TIP },       /* tab 4              */    \
-    { WWT_TAB,              1,  127,    157,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_STATS_TAB_TIP },       /* tab 5              */    \
-    { WWT_TAB,              1,  158,    188,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_OBJECTIVE_TAB_TIP },   /* tab 6              */    \
-    { WWT_TAB,              1,  189,    219,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,           STR_PARK_AWARDS_TAB_TIP }       /* tab 7              */
+    { WWT_TAB,              1,  3,      33,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_ENTRANCE_TAB_TIP },    /* tab 1              */    \
+    { WWT_TAB,              1,  34,     64,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_RATING_TAB_TIP },      /* tab 2              */    \
+    { WWT_TAB,              1,  65,     95,     17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_GUESTS_TAB_TIP },      /* tab 3              */    \
+    { WWT_TAB,              1,  96,     126,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_PRICE_TAB_TIP },       /* tab 4              */    \
+    { WWT_TAB,              1,  127,    157,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_STATS_TAB_TIP },       /* tab 5              */    \
+    { WWT_TAB,              1,  158,    188,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_OBJECTIVE_TAB_TIP },   /* tab 6              */    \
+    { WWT_TAB,              1,  189,    219,    17,     43,     IMAGE_TYPE_REMAP | SPR_TAB,     STR_PARK_AWARDS_TAB_TIP }       /* tab 7              */
 
 static rct_widget window_park_entrance_widgets[] = {
     MAIN_PARK_WIDGETS,
@@ -123,6 +127,7 @@ static rct_widget window_park_stats_widgets[] = {
 
 static rct_widget window_park_objective_widgets[] = {
     MAIN_PARK_WIDGETS,
+    { WWT_BUTTON,           1,  7,      222,    195,    206,    STR_NEXT_SCENARIO,                          STR_NONE },
     { WWT_BUTTON,           1,  7,      222,    209,    220,    STR_ENTER_NAME_INTO_SCENARIO_CHART,         STR_NONE },             // enter name
     { WIDGETS_END },
 };
@@ -539,6 +544,8 @@ static constexpr const window_park_award ParkAwards[] = {
     { STR_AWARD_BEST_GENTLE_RIDES,          SPR_AWARD_BEST_GENTLE_RIDES },
 };
 // clang-format on
+
+IScenarioRepository * _scenarioRepository = nullptr;
 
 static void window_park_init_viewport(rct_window *w);
 static void window_park_set_page(rct_window *w, int32_t page);
@@ -1441,6 +1448,16 @@ rct_window * window_park_objective_open()
     window->y = context_get_height() / 2 - 87;
     window_invalidate(window);
 
+    // Don't display button if there's no next scenario
+    if (gConfigGeneral.allow_early_completion) {
+        _scenarioRepository = GetScenarioRepository();
+        _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
+        const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+        if (scenario == nullptr) {
+            window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
+        }
+    }
+
     return window;
 }
 
@@ -1474,6 +1491,23 @@ static void window_park_objective_mouseup(rct_window *w, rct_widgetindex widgetI
             32
         );
         break;
+    case WIDX_NEXT_LEVEL:
+        if (gConfigGeneral.allow_early_completion) {
+            // TODO Do something if objective failed
+            _scenarioRepository = GetScenarioRepository();
+            _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
+            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+            if (scenario != nullptr) {
+                gScenarioIndex += 1;
+                context_load_park_from_file(scenario->path);
+            }
+            else {
+                window_close_by_class(WC_MANAGE_TRACK_DESIGN);
+                window_close_by_class(WC_TRACK_DELETE_PROMPT);
+                game_do_command(0, 1, 0, 0, GAME_COMMAND_LOAD_OR_QUIT, 1, 0);
+                break;
+            }
+        }
     }
 }
 
@@ -1517,11 +1551,39 @@ static void window_park_objective_invalidate(rct_window *w)
     window_park_set_pressed_tab(w);
     window_park_prepare_window_title_text();
 
-    //
-    if (gParkFlags & PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT)
+    if (gParkFlags & PARK_FLAGS_SCENARIO_COMPLETE_NAME_INPUT) {
         window_park_objective_widgets[WIDX_ENTER_NAME].type = WWT_BUTTON;
-    else
+    }
+    else {
         window_park_objective_widgets[WIDX_ENTER_NAME].type = WWT_EMPTY;
+    }
+
+    if (gConfigGeneral.allow_early_completion) {
+        // If scenario completed, prompt to advance to next level or quit to menu
+        if (gScenarioCompletedCompanyValue != MONEY32_UNDEFINED) {
+            if ((uint32_t)gScenarioCompletedCompanyValue == 0x80000001) {
+                //TODO retry level or quit to menu
+            }
+            else {
+                window_park_objective_widgets[WIDX_NEXT_LEVEL].text = STR_NEXT_SCENARIO;
+                window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_BUTTON;
+                widget_set_enabled(w, WIDX_NEXT_LEVEL, true);
+
+                _scenarioRepository = GetScenarioRepository();
+                _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
+                const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+                if (scenario == nullptr) {
+                    window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
+                }
+            }
+        }
+        else {
+            window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
+        }
+    }
+    else {
+        window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
+    }
 
     window_align_tabs(w, WIDX_TAB_1, WIDX_TAB_7);
     window_park_anchor_border_widgets(w);

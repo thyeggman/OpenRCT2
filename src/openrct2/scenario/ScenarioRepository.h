@@ -24,20 +24,20 @@ struct scenario_highscore_entry
 
 struct scenario_index_entry
 {
-    utf8    path[MAX_PATH];
+    utf8      path[MAX_PATH];
     uint64_t  timestamp;
 
     // Category / sequence
     uint8_t   category;
     uint8_t   source_game;
-    int16_t  source_index;
+    int16_t   source_index;
     uint16_t  sc_id;
 
     // Objective
     uint8_t   objective_type;
     uint8_t   objective_arg_1;
-    int32_t  objective_arg_2;
-    int16_t  objective_arg_3;
+    int32_t   objective_arg_2;
+    int16_t   objective_arg_3;
     scenario_highscore_entry * highscore;
     
     utf8 internal_name[64]; // Untranslated name

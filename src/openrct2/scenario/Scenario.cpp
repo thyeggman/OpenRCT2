@@ -75,6 +75,8 @@ uint8_t gScenarioObjectiveYear;
 uint16_t gScenarioObjectiveNumGuests;
 money32 gScenarioObjectiveCurrency;
 
+uint8_t gScenarioIndex;
+
 uint16_t gScenarioParkRatingWarningDays;
 money32 gScenarioCompletedCompanyValue;
 money32 gScenarioCompanyValueRecord;
@@ -94,7 +96,6 @@ void scenario_begin()
     gScenarioSrand0 ^= platform_get_ticks();
     gScenarioSrand1 ^= platform_get_ticks();
 
-
     gParkFlags &= ~PARK_FLAGS_NO_MONEY;
     if (gParkFlags & PARK_FLAGS_NO_MONEY_SCENARIO)
         gParkFlags |= PARK_FLAGS_NO_MONEY;
@@ -111,6 +112,7 @@ void scenario_begin()
     gHistoricalProfit = gInitialCash - gBankLoan;
     gCash = gInitialCash;
 
+    //gS6Info.name;
     safe_strcpy(gScenarioDetails, gS6Info.details, 256);
     safe_strcpy(gScenarioName, gS6Info.name, 64);
 
