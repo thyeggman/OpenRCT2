@@ -32,6 +32,7 @@ struct scenario_index_entry
     uint8_t   source_game;
     int16_t   source_index;
     uint16_t  sc_id;
+    uint16_t  advancement_index;
 
     // Objective
     uint8_t   objective_type;

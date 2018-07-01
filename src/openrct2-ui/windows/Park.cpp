@@ -1451,9 +1451,8 @@ rct_window * window_park_objective_open()
     if (gConfigGeneral.allow_early_completion) {
         _scenarioRepository = GetScenarioRepository();
         _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
-        const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+        const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioAdvancementIndex + 1);
 
-        // If no next scenario and didn't fail current scenario
         if (scenario == nullptr) {
             window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
         }
@@ -1496,7 +1495,7 @@ static void window_park_objective_mouseup(rct_window *w, rct_widgetindex widgetI
         if (gConfigGeneral.allow_early_completion) {
             _scenarioRepository = GetScenarioRepository();
             _scenarioRepository->Scan(LocalisationService_GetCurrentLanguage());
-            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioAdvancementIndex + 1);
 
             if (scenario != nullptr) {
                 context_load_park_from_file(scenario->path);
@@ -1568,7 +1567,7 @@ static void window_park_objective_invalidate(rct_window *w)
             window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_BUTTON;
             widget_set_enabled(w, WIDX_NEXT_LEVEL, true);
 
-            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioIndex + 1);
+            const scenario_index_entry * scenario = _scenarioRepository->GetByIndex(gScenarioAdvancementIndex + 1);
             if (scenario == nullptr) {
                 window_park_objective_widgets[WIDX_NEXT_LEVEL].type = WWT_EMPTY;
             }

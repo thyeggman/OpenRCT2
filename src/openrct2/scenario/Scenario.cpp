@@ -75,7 +75,7 @@ uint8_t gScenarioObjectiveYear;
 uint16_t gScenarioObjectiveNumGuests;
 money32 gScenarioObjectiveCurrency;
 
-uint8_t gScenarioIndex;
+uint8_t gScenarioAdvancementIndex;
 
 uint16_t gScenarioParkRatingWarningDays;
 money32 gScenarioCompletedCompanyValue;
@@ -113,7 +113,7 @@ void scenario_begin()
     gCash = gInitialCash;
 
     IScenarioRepository * _scenarioRepository = GetScenarioRepository();
-    gScenarioIndex = _scenarioRepository->GetByInternalName(gS6Info.name)->sc_id;
+    gScenarioAdvancementIndex = _scenarioRepository->GetByInternalName(gS6Info.name)->advancement_index;
 
     safe_strcpy(gScenarioDetails, gS6Info.details, 256);
     safe_strcpy(gScenarioName, gS6Info.name, 64);

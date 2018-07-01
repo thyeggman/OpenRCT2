@@ -13,10 +13,10 @@
 
 struct source_desc
 {
-    const utf8 * title;
+    const utf8 *  title;
     uint8_t        id;
     uint8_t        source;
-    int32_t       index;
+    int32_t        index;
     uint8_t        category;
 };
 
@@ -26,13 +26,13 @@ namespace ScenarioSources
     bool TryGetById(uint8_t id, source_desc * outDesc);
     void NormaliseName(utf8 * buffer, size_t bufferSize, const utf8 * name);
 
-    struct ScenarioAlias
+    typedef struct ScenarioAlias
     {
         const utf8 * Original;
         const utf8 * Alternative;
     };
 
-    struct ScenarioTitleDescriptor
+    typedef struct ScenarioTitleDescriptor
     {
         const uint8_t  Id;
         const utf8 *   Title;
@@ -45,6 +45,19 @@ bool scenario_get_source_desc(const utf8 *name, source_desc *outDesc);
 bool scenario_get_source_desc_by_id(uint8_t id, source_desc *outDesc);
 void scenario_normalise_name(utf8 *buffer, size_t bufferSize, utf8 *name);
 
+enum
+{
+    SC_ADV_INDEX_RCT1 = 0,
+    SC_ADV_INDEX_RCT1AA = 100,
+    SC_ADV_INDEX_RCT1LL = 200,
+    SC_ADV_INDEX_RCT2 = 300,
+    SC_ADV_INDEX_RCT2WW = 400,
+    SC_ADV_INDEX_RCT2TT = 500,
+    SC_ADV_INDEX_RCT1_REAL_PARKS = 600,
+    SC_ADV_INDEX_RCT2_REAL_PARKS = 700,
+    SC_ADV_INDEX_RCT2_OTHER_PARKS = 800,
+    SC_ADV_INDEX_NONE = 65535
+};
 
 // RCT1 scenario index map
 enum
